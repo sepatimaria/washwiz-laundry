@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WashWiz — Laundry Modern</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- DESIGN SYSTEM & CSS VARIABLES --- */
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: rgba(109, 40, 217, 0.12);
+      --primary-gradient: linear-gradient(135deg, #7c3aed, #ea580c);
+      /* Warna balon sabun biru-ungu menyala untuk Light Mode */
+      --bubble-color-1: rgba(124, 58, 237, 0.45);
+      --bubble-color-2: rgba(59, 130, 246, 0.45);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(139, 92, 246, 0.2);
+      /* Warna balon sabun di Dark Mode */
+      --bubble-color-1: rgba(167, 139, 250, 0.35);
+      --bubble-color-2: rgba(96, 165, 250, 0.35);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* --- ANIMASI GELEMBUNG BALON SABUN (WARNA BIRU/UNGU NYALA) --- */
+    .bubble-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), var(--bubble-color-1) 40%, var(--bubble-color-2) 70%, rgba(255, 255, 255, 0));
+      border: 1.5px solid rgba(124, 58, 237, 0.4);
+      border-radius: 50%;
+      box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.9), 0 6px 15px rgba(59, 130, 246, 0.2);
+      animation: flyUp var(--speed) linear infinite;
+    }
+
+    @keyframes flyUp {
+      0% {
+        transform: translateY(0) scale(0.6) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        transform: translateY(-125vh) scale(1.3) translateX(var(--distance)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* --- NAVIGASI & HEADER --- */
+    header {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 26px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .logo span {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav {
+      display: flex;
+      gap: 32px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    nav a:hover { color: #7c3aed; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .theme-toggle {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      color: var(--text-main);
+      padding: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-pesan {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 18px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    /* --- HERO SPLIT SECTION (TEKS VS MESIN CUCI) --- */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .hero-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 50px;
+      margin-bottom: 70px;
+      padding: 40px 0;
+    }
+
+    .hero-text {
+      flex: 1;
+      max-width: 650px;
+    }
+
+    .hero-text h1 {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    /* --- VISUAL INTERAKTIF MESIN CUCI BESAR BERPUTAR --- */
+    .washing-machine-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .washing-machine {
+      width: 280px;
+      height: 360px;
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      border: 8px solid #94a3b8;
+      border-radius: 24px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 5px 15px rgba(255,255,255,0.5);
+    }
+    [data-theme="dark"] .washing-machine {
+      background: linear-gradient(135deg, #334155, #1e293b);
+      border-color: #475569;
+    }
+
+    /* Laci Deterjen & Tombol Atas */
+    .wm-top-panel {
+      height: 50px;
+      border-bottom: 4px solid #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+    }
+    [data-theme="dark"] .wm-top-panel { border-color: #475569; }
+
+    .wm-drawer {
+      width: 70px;
+      height: 20px;
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    [data-theme="dark"] .wm-drawer { background: #475569; }
+
+    .wm-display {
+      width: 50px;
+      height: 20px;
+      background: #0284c7;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+    }
+
+    /* Pintu Kaca & Tabung Drum Utama */
+    .wm-door-outer {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 12px solid #cbd5e1;
+      position: absolute;
+      top: 90px;
+      left: 32px;
+      background: rgba(2, 132, 199, 0.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .wm-door-outer { border-color: #475569; }
+
+    /* Bagian Dalam Tabung Yang Berputar Mulus */
+    .wm-drum-spin {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #38bdf8 10%, #0284c7 80%);
+      position: relative;
+      animation: drumRotate 2.5s linear infinite; /* Animasi Putaran Pakaian */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes drumRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Baju/Pakaian Di Dalam Tabung */
+    .wm-clothes {
+      width: 100px;
+      height: 100px;
+      border-radius: 40%;
+      background: linear-gradient(45deg, #7c3aed, #ea580c, #3b82f6);
+      opacity: 0.85;
+      filter: blur(2px);
+    }
+
+    /* Efek Kaca Refleksi Mengkilap */
+    .wm-glass-shine {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* --- STATISTIK & LAYANAN --- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 90px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 35px 24px;
+      border-radius: 24px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .stat-card h2 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #ea580c;
+      margin-bottom: 8px;
+    }
+
+    .services-section {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 40px;
+    }
+
+    .service-badge {
+      display: inline-block;
+      background: #f5f3ff;
+      color: #7c3aed;
+      padding: 10px 24px;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .services-section h1 {
+      font-size: 46px;
+      font-weight: 800;
+      margin-bottom: 50px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      background: #f5f3ff;
+      color: #7c3aed;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    [data-theme="dark"] .icon-box { background: #334155; color: #a78bfa; }
+
+    .price-tag {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ea580c;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 15px;
+      margin-top: 20px;
+    }
+    .price-tag span { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+
+    .dashboard-section {
+      margin-top: 100px;
+      padding: 60px 0;
+      border-top: 2px dashed var(--border-color);
+    }
+    .dashboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 32px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(109, 40, 217, 0.04);
+    }
+    .db-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+    .status-badge {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .db-timeline {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    .timeline-item {
+      text-align: center;
+      flex: 1;
+      position: relative;
+    }
+    .timeline-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #7c3aed;
+      margin: 0 auto 12px auto;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+    }
+    .timeline-item.active p { font-weight: 700; color: #7c3aed; }
+  </style>
+</head>
+<body>
+
+<div class="bubble-container" id="bubbleContainer"></div>
+
+<header>
+  <a href="#" class="logo">
+    <span>WashWiz</span>
+  </a>
+  <nav>
+  <a href="#fitur">Fitur</a>
+  <a href="#Paket Laundry">Paket Laundry</a>
+  <a href="layanan.html">Layanan</a>
+</nav>
+  <div class="header-actions">
+    <button class="theme-toggle" id="themeToggle">
+      <i data-lucide="sun" id="themeIcon"></i>
+    </button>
+    <a href="order.html" class="btn-pesan">
+      Pesan Sekarang
+      <i data-lucide="arrow-right"></i>
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="hero-container">
+    <div class="hero-text">
+      <h1>Era Baru Laundry Digital, Menjemput Pakaian Cerdas Anda</h1>
+      <p>WashWiz menggabungkan sistem kurir jemput otomatis dengan presisi temperatur mesin tinggi. Menjadikan pakaian Anda wangi higienis bebas kuman tanpa perlu keluar rumah.</p>
+      <a href="order.html" class="btn-pesan">Mulai Cuci Sekarang</a>
+    </div>
+
+    <div class="washing-machine-wrapper">
+      <div class="washing-machine">
+        <div class="wm-top-panel">
+          <div class="wm-drawer"></div>
+          <div class="wm-display"></div>
+        </div>
+        <div class="wm-door-outer">
+          <div class="wm-glass-shine"></div>
+          <div class="wm-drum-spin">
+            <div class="wm-clothes"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-grid" id="fitur">
+    <div class="stat-card">
+      <h2 class="counter" data-target="15200">0</h2>
+      <p>Pakaian Selesai</p>
+    </div>
+    <div class="stat-card">
+      <h2 class="counter" data-target="99">0</h2>
+      <p>Tingkat Kepuasan %</p>
+    </div>
+    <div class="stat-card">
+      <h2 class="counter" data-target="24">0</h2>
+      <p>Jam Express Garansi</p>
+    </div>
+    <div class="stat-card">
+      <h2 class="counter" data-target="12">0</h2>
+      <p>Lokasi Hub Kota</p>
+    </div>
+  </div>
+
+  <div class="services-section" id="Paket Laundry">
+    <span class="service-badge" id="harga">Paket Laundry</span>
+    <h1>Tarif Transparan Paket Laundry Kami</h1>
+    
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="icon-box"><i data-lucide="droplet" size="28"></i></div>
+        <h3>Cuci Kering</h3>
+        <p>Standar higienis cairan deterjen premium aman bagi kulit sensitif.</p>
+        <div class="price-tag">Rp 8.000 <span>/ kg</span></div>
+      </div>
+      <div class="service-card">
+        <div class="icon-box"><i data-lucide="sparkles" size="28"></i></div>
+        <h3>Cuci + Setrika</h3>
+        <p>Paket lengkap setrika uap rapi bebas kerutan langsung siap pakai.</p>
+        <div class="price-tag">Rp 12.000 <span>/ kg</span></div>
+      </div>
+      <div class="service-card">
+        <div class="icon-box"><i data-lucide="zap" size="28"></i></div>
+        <h3>Express 6 Jam</h3>
+        <p>Solusi super kilat penanganan instan pengerjaan hari yang sama.</p>
+        <div class="price-tag">Rp 20.000 <span>/ kg</span></div>
+      </div>
+    </div>
+  </div>
+  <script>
+  lucide.createIcons();
+
+  // 1. GENERATOR GELEMBUNG SABUN (BIRU-UNGU NEON TERANG)
+  const container = document.getElementById('bubbleContainer');
+  const bubbleCount = 28;
+
+  for (let i = 0; i < bubbleCount; i++) {
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+    
+    const size = Math.random() * 55 + 25; 
+    const left = Math.random() * 100; 
+    const speed = Math.random() * 7 + 7; 
+    const delay = Math.random() * 6; 
+    const distance = (Math.random() * 120 - 60) + 'px'; 
+
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${left}%`;
+    bubble.style.setProperty('--speed', `${speed}s`);
+    bubble.style.setProperty('--distance', distance);
+    bubble.style.animationDelay = `${delay}s`;
+
+    container.appendChild(bubble);
+  }
+
+  // 2. SISTEM TEMA / DARK MODE
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateToggleIcon(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateToggleIcon(newTheme);
+  });
+
+  function updateToggleIcon(theme) {
+    if (theme === 'dark') {
+      themeIcon.setAttribute('data-lucide', 'moon');
+    } else {
+      themeIcon.setAttribute('data-lucide', 'sun');
+    }
+    lucide.createIcons();
+  }
+
+  // 3. COUNTER STATISTIK
+  const counters = document.querySelectorAll('.counter');
+  counters.forEach(counter => {
+    const updateCount = () => {
+      const target = +counter.getAttribute('data-target');
+      const count = +counter.innerText;
+      const speed = 80; 
+      const inc = target / speed;
+
+      if (count < target) {
+        counter.innerText = Math.ceil(count + inc);
+        setTimeout(updateCount, 15);
+      } else {
+        counter.innerText = target + (target === 99 ? '%' : target === 12 || target === 15200 ? '+' : '');
+      }
+    };
+    updateCount();
+  });
+</script>
+
+</body>
+</html>

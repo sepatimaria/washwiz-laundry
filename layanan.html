@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Layanan</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Design system global */
+    :root {
+      --primary: #7c3aed;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: rgba(109, 40, 217, 0.12);
+      --bg-surface-solid: #ffffff;
+      --gradient-text: linear-gradient(135deg, #7c3aed, #ea580c);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-size: 16px; 
+      color: var(--text-main);
+    }
+
+    .gradient-text {
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .glass-card {
+      background: var(--bg-surface-solid);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(109, 40, 217, 0.03);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    /* Efek hover interaktif untuk SEMUA card yang bisa diklik */
+    .clickable-card {
+      cursor: pointer;
+    }
+    .clickable-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(124, 58, 237, 0.1);
+      border-color: var(--primary);
+    }
+
+    /* --- STYLE SYSTEM FOR MODAL POP-UP --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 28px;
+      max-width: 550px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .close-modal-btn {
+      background: #f1f5f9;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      transition: background 0.2s;
+    }
+    .close-modal-btn:hover { background: #e2e8f0; }
+
+    /* List item styles di dalam modal */
+    .modal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .modal-item {
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .promo-item {
+      background: #f5f3ff;
+      border: 1px dashed rgba(124, 58, 237, 0.3);
+    }
+
+    .modal-badge {
+      background: #e2e8f0;
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: var(--gradient-text);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Layout Grid Dashboard -->
+  <div style="display: grid; grid-template-columns: 310px 1fr; min-height: 100vh;">
+    
+    <!-- Sidebar -->
+    <aside style="background: var(--bg-surface-solid); border-right: 1px solid var(--border-color); padding: 40px 28px; display: flex; flex-direction: column; gap: 48px;">
+      <a href="index.html" style="display: flex; align-items: center; gap: 14px; font-size: 28px; font-weight: 800; text-decoration: none; color: var(--text-main);">
+        <span>Wash<span class="gradient-text">Wiz</span></span>
+      </a>
+
+      <nav style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+        <a href="#" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: var(--primary); background: rgba(124, 58, 237, 0.06); text-decoration: none; font-weight: 700; font-size: 18px;">
+          <i data-lucide="layout-dashboard" style="width: 24px; height: 24px;"></i> Layanan
+        </a>
+        <a href="tracking.html" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 18px;">
+          <i data-lucide="truck" style="width: 24px; height: 24px;"></i> Live Tracking
+        </a>
+        <a href="order.html" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 18px;">
+          <i data-lucide="plus-circle" style="width: 24px; height: 24px;"></i> Pesan Laundry
+        </a>
+
+        <!-- BARU: Tombol Kembali ke index.html dengan nama samaran keren -->
+        <hr style="border: none; border-top: 1px dashed var(--border-color); margin: 12px 0;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #ef4444; text-decoration: none; font-weight: 600; font-size: 18px; transition: background 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.05)'" onmouseout="this.style.background='none'">
+          <i data-lucide="log-out" style="width: 24px; height: 24px;"></i> Keluar 
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Workstation -->
+    <main style="padding: 50px; overflow-y: auto;">
+      <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
+        <div>
+          <h1 style="font-weight: 800; font-size: 36px; margin-bottom: 6px;">Aktivitas Laundry Anda</h1>
+          <p style="color: var(--text-muted); font-size: 18px;">Selamat datang kembali di ekosistem</i> digital.</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <div style="background: var(--bg-surface-solid); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 16px; font-weight: 700; font-size: 18px;">
+            WWZ Wallet: <span class="gradient-text">Rp 120.000</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Widget Grid (Semua Bisa Diklik Sekarang) -->
+      <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-bottom: 50px;">
+        <!-- Widget Cucian Bulanan (Clickable) -->
+        <div class="glass-card clickable-card" style="padding: 36px;" id="cucianWidgetBtn">
+          <h4 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            Total Cucian Bulanan <i data-lucide="info" style="width: 16px; height: 16px; color: var(--primary);"></i>
+          </h4>
+          <span style="font-size: 3rem; font-weight: 800;" class="gradient-text">42 Kg</span>
+        </div>
+        
+        <!-- Widget Voucher (Clickable) -->
+        <div class="glass-card clickable-card" style="padding: 36px;" id="promoWidgetBtn">
+          <h4 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            Voucher Tersedia <i data-lucide="info" style="width: 16px; height: 16px; color: var(--primary);"></i>
+          </h4>
+          <span style="font-size: 3rem; font-weight: 800;" class="gradient-text">3 Promo</span>
+        </div>
+
+        <!-- Widget Transaksi (Clickable) -->
+        <div class="glass-card clickable-card" style="padding: 36px;" id="transaksiWidgetBtn">
+          <h4 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            Total Transaksi <i data-lucide="info" style="width: 16px; height: 16px; color: var(--primary);"></i>
+          </h4>
+          <span style="font-size: 3rem; font-weight: 800;" class="gradient-text">5 Transaksi</span>
+        </div>
+      </section>
+
+      <!-- Active Order Dynamic Area -->
+      <section style="margin-top: 40px;">
+        <h3 style="font-weight: 800; font-size: 24px; margin-bottom: 20px;">Antrean Pesanan Aktif</h3>
+        <div class="glass-card" style="padding: 36px;" id="noOrderBox">
+          <p style="color: var(--text-muted); text-align: center; font-size: 18px;">Tidak ada aktivitas laundry yang sedang aktif. Mulai cuci dengan menekan tombol pesan.</p>
+        </div>
+        
+        <div class="glass-card" style="padding: 40px; display: none;" id="activeOrderCard">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span id="dashOrderID" style="font-family: monospace; font-weight: 700; font-size: 16px; background: #f1f5f9; padding: 6px 12px; border-radius: 6px;">WWZ-2026-XXXX</span>
+              <h4 id="dashService" style="font-weight: 800; font-size: 1.8rem; margin-top: 12px;">Cuci Kering</h4>
+              <p style="color: var(--text-muted); font-size: 16px; margin-top: 4px;" id="dashWeight">Berat: 5 Kg</p>
+            </div>
+            <a href="tracking.html" class="btn-primary" style="font-size: 16px;">Lacak Posisi Kurir</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- --- SYSTEM POP-UP MODALS --- -->
+
+  <!-- MODAL 1: Detail Cucian 42 Kg -->
+  <div class="modal-overlay" id="cucianModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-weight: 800; font-size: 24px;">Rincian Berat Cucian 🧺</h2>
+        <button class="close-modal-btn" onclick="closeModal('cucianModal')"><i data-lucide="x"></i></button>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 15px;">Akumulasi berat pakaian yang diproses sepanjang bulan berjalan.</p>
+      <div class="modal-list">
+        <div class="modal-item">
+          <div style="font-size: 24px;">👕</div>
+          <div style="flex-grow: 1;">
+            <h4 style="font-weight: 700; font-size: 16px;">Pakaian & Kaos Harian</h4>
+            <p style="font-size: 14px; color: var(--text-muted);">Cuci kering lipat regular</p>
+          </div>
+          <span class="modal-badge" style="background: #e0f2fe; color: #0369a1;">28 Kg</span>
+        </div>
+        <div class="modal-item">
+          <div style="font-size: 24px;">🛏️</div>
+          <div style="flex-grow: 1;">
+            <h4 style="font-weight: 700; font-size: 16px;">Sprei & Bedcover</h4>
+            <p style="font-size: 14px; color: var(--text-muted);">Cuci premium uap besar</p>
+          </div>
+          <span class="modal-badge" style="background: #e0f2fe; color: #0369a1;">10 Kg</span>
+        </div>
+        <div class="modal-item">
+          <div style="font-size: 24px;">💼</div>
+          <div style="flex-grow: 1;">
+            <h4 style="font-weight: 700; font-size: 16px;">Jas & Pakaian Formal</h4>
+            <p style="font-size: 14px; color: var(--text-muted);">Dry cleaning eksklusif</p>
+          </div>
+          <span class="modal-badge" style="background: #e0f2fe; color: #0369a1;">4 Kg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Tampilan 3 Promo -->
+  <div class="modal-overlay" id="promoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-weight: 800; font-size: 24px;">Klaim Voucher Spesial 🎉</h2>
+        <button class="close-modal-btn" onclick="closeModal('promoModal')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-list">
+        <div class="modal-item promo-item">
+          <div style="font-size: 28px;">🌙</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Diskon Hari Raya</h4>
+              <span style="background: var(--gradient-text); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Aktif</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted);">Potongan harga Rp 15.000 untuk layanan cuci uap.</p>
+          </div>
+        </div>
+        <div class="modal-item promo-item">
+          <div style="font-size: 28px;">✨</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Loyalitas 50 Kg</h4>
+              <span style="background: #22c55e; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Spesial</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted);">Target 50 Kg dekat! Dapatkan gratis ongkir + 2 Kg premium.</p>
+          </div>
+        </div>
+        <div class="modal-item promo-item">
+          <div style="font-size: 28px;">🥂</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Festival Tahun Baru</h4>
+              <span style="background: #ea580c; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Terbatas</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted);">Cashback saldo wallet 10% khusus pemesanan ekspres.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Detail Riwayat 5 Transaksi -->
+  <div class="modal-overlay" id="transaksiModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-weight: 800; font-size: 24px;">Riwayat 5 Transaksi Terakhir 🧾</h2>
+        <button class="close-modal-btn" onclick="closeModal('transaksiModal')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-list">
+        <!-- Trx 1 -->
+        <div class="modal-item">
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Cuci Kering + Setrika</h4>
+              <span style="font-weight: 700; color: #22c55e;">Rp 35.000</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);">ID: WWZ-9821 • 12 Juli 2026</p>
+          </div>
+        </div>
+        <!-- Trx 2 -->
+        <div class="modal-item">
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Dry Cleaning Jas Formal</h4>
+              <span style="font-weight: 700; color: #22c55e;">Rp 50.000</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);">ID: WWZ-9754 • 05 Juli 2026</p>
+          </div>
+        </div>
+        <!-- Trx 3 -->
+        <div class="modal-item">
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Cuci Bedcover Premium</h4>
+              <span style="font-weight: 700; color: #22c55e;">Rp 45.000</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);">ID: WWZ-9610 • 28 Juni 2026</p>
+          </div>
+        </div>
+        <!-- Trx 4 -->
+        <div class="modal-item">
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Cuci Kering Lipat</h4>
+              <span style="font-weight: 700; color: #22c55e;">Rp 24.000</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);">ID: WWZ-9412 • 19 Juni 2026</p>
+          </div>
+        </div>
+        <!-- Trx 5 -->
+        <div class="modal-item">
+          <div style="flex-grow: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <h4 style="font-weight: 700; font-size: 16px;">Top Up WWZ Wallet</h4>
+              <span style="font-weight: 700; color: var(--primary);">+ Rp 100.000</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted);">Top-Up Mandiri • 10 Juni 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Fungsi pembantu global untuk menutup modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Logic Render Data Pemesanan Aktif
+      const activeOrderRaw = localStorage.getItem('_active_order');
+      if (activeOrderRaw) {
+        const orderData = JSON.parse(activeOrderRaw);
+        document.getElementById('noOrderBox').style.display = 'none';
+        
+        const card = document.getElementById('activeOrderCard');
+        card.style.display = 'block';
+        document.getElementById('dashOrderID').innerText = orderData.orderID;
+        document.getElementById('dashService').innerText = orderData.service;
+        document.getElementById('dashWeight').innerText = `Estimasi: ${orderData.weight} Kg`;
+      }
+
+      // --- SETUP PEMICU MODAL INTERAKTIF ---
+      const modals = {
+        cucianWidgetBtn: 'cucianModal',
+        promoWidgetBtn: 'promoModal',
+        transaksiWidgetBtn: 'transaksiModal'
+      };
+
+      // Loop binding event click ke semua card widget
+      Object.keys(modals).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        const modal = document.getElementById(modals[btnId]);
+        
+        if(btn && modal) {
+          btn.addEventListener('click', () => modal.classList.add('active'));
+          // Tutup modal otomatis jika area luar transparan di klik
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+          });
+        }
+      });
+
+      // Inisialisasi Ikon Lucide
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

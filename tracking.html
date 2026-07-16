@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Tracking System — WashWiz</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tracking.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Styling tambahan agar tombol telepon dan pesan sejajar rapi */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn-action {
+      padding: 10px; 
+      border-radius: 50%; 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn-action:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span>Wash<span class="gradient-text">Wiz</span></span>
+      </a>
+      <a href="layanan.html" class="btn-secondary">Kembali ke Layanan</a>
+    </div>
+  </nav>
+
+  <div class="tracking-container">
+    <div class="tracking-grid">
+      <!-- Left: Vector Live Map (Gojek / Uber inspired style) -->
+      <div class="map-card glass-card">
+        <div class="map-simulation" id="mapSim">
+          <svg viewBox="0 0 800 600" class="map-svg" width="100%" height="100%">
+            <!-- Custom Road Grids -->
+            <path d="M 50 150 L 750 150" stroke="rgba(15, 23, 42, 0.1)" stroke-width="8" stroke-linecap="round" />
+            <path d="M 50 450 L 750 450" stroke="rgba(15, 23, 42, 0.1)" stroke-width="8" stroke-linecap="round" />
+            <path d="M 200 50 L 200 550" stroke="rgba(15, 23, 42, 0.1)" stroke-width="8" stroke-linecap="round" />
+            <path d="M 600 50 L 600 550" stroke="rgba(15, 23, 42, 0.1)" stroke-width="8" stroke-linecap="round" />
+            
+            <!-- Courier Route Line -->
+            <path id="deliveryRoute" d="M 200 150 L 600 150 L 600 450" fill="none" stroke="var(--primary)" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 6" />
+
+            <!-- Outlet Marker -->
+            <circle cx="200" cy="150" r="16" fill="var(--secondary)" />
+            <circle cx="200" cy="150" r="24" fill="none" stroke="var(--secondary)" stroke-width="2" class="marker-pulse" />
+
+            <!-- Delivery Destination Marker -->
+            <circle cx="600" cy="450" r="16" fill="var(--primary)" />
+            <circle cx="600" cy="450" r="24" fill="none" stroke="var(--primary)" stroke-width="2" class="marker-pulse" />
+
+            <!-- Animated Moving Courier Marker -->
+            <g id="courierPin" transform="translate(200, 150)">
+              <circle cx="0" cy="0" r="18" fill="var(--accent)" stroke="#FFFFFF" stroke-width="3" />
+              <text x="-7" y="5" font-size="14">🛵</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Right: Real-time Timelines & Agent Profiles -->
+      <div class="timeline-card glass-card">
+        <!-- Sisi Kanan: Bagian Driver Profile di tracking.html -->
+        <div class="driver-profile">
+          <div class="driver-pic">🚴‍♂️</div>
+          <div class="driver-meta">
+            <h4>Bagas Adiputra</h4>
+            <span class="rating">⭐ 4.9 • Driver Ekspedisi</span>
+            <span class="vehicle-plate">B 2026 WWZ</span>
+          </div>
+          
+          <!-- Tombol Aksi Kurir dengan Warna Senada & Cantik -->
+          <div class="action-buttons">
+            <button class="btn-primary btn-action" title="Hubungi Kurir">
+              <i data-lucide="phone"></i>
+            </button>
+            <button class="btn-primary btn-action" title="Kirim Pesan">
+              <i data-lucide="message-square"></i>
+            </button>
+          </div>
+        </div>
+        <div class="tracking-code-badge">
+          <span>Booking Code: </span>
+          <strong id="trackingIDDisplay">WWZ-2026-DEFAULT</strong>
+        </div>
+
+        <div class="progress-linear-wrapper">
+          <div class="progress-fill" id="statusProgressFill" style="width: 25%;"></div>
+        </div>
+
+        <!-- Vertical Interactive Timeline -->
+        <div class="vertical-timeline">
+          <div class="timeline-node active" id="node-1">
+            <span class="node-icon">📦</span>
+            <div class="node-desc">
+              <h5>Pesanan Diterima</h5>
+              <p>Autopilot memverifikasi pesanan Anda.</p>
+            </div>
+          </div>
+          <div class="timeline-node" id="node-2">
+            <span class="node-icon">🛵</span>
+            <div class="node-desc">
+              <h5>Kurir Menjemput Pakaian</h5>
+              <p>Driver terdekat telah melaju ke titik penjemputan.</p>
+            </div>
+          </div>
+          <div class="timeline-node" id="node-3">
+            <span class="node-icon">🧼</span>
+            <div class="node-desc">
+              <h5>Sedang Diproses</h5>
+              <p>Pakaian Anda sedang dicuci higienis di mesin cuci premium kami.</p>
+            </div>
+          </div>
+          <div class="timeline-node" id="node-4">
+            <span class="node-icon">🏠</span>
+            <div class="node-desc">
+              <h5>Selesai & Dikirim</h5>
+              <p>Pakaian wangi siap diantar ke lokasi awal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script src="js/tracking.js"></script>
+  <script>
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+      const activeOrderRaw = localStorage.getItem('_active_order');
+      if (activeOrderRaw) {
+        const orderData = JSON.parse(activeOrderRaw);
+        const displayElem = document.getElementById('trackingIDDisplay');
+        if (displayElem && orderData.orderID) {
+          displayElem.innerText = orderData.orderID;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
